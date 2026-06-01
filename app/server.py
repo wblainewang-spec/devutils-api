@@ -504,7 +504,22 @@ class DevUtilsHandler(BaseHTTPRequestHandler):
 
 
 def start():
-    server = HTTPServer((config.HOST, config.PORT), DevUtilsHandler)
+    import sys as _sys
+    _sys.stderr.write("DEBUG[start]: entering start()\n")
+    _sys.stderr.flush()
+    try:
+        _sys.stderr.write(f"DEBUG[start]: binding to {config.HOST}:{config.PORT}\n")
+        _sys.stderr.flush()
+        server = HTTPServer((config.HOST, config.PORT), DevUtilsHandler)
+        _sys.stderr.write("DEBUG[start]: server created successfully\n")
+        _sys.stderr.flush()
+    except Exception as e:
+        _sys.stderr.write(f"DEBUG[start]: FAILED to create server: {e}\n")
+        import traceback as _tb
+        _tb.print_exc(file=_sys.stderr)
+        _sys.stderr.flush()
+        raise
+
     print(f"🌐 {config.APP_NAME} v{config.APP_VERSION}")
     print(f"   Listening on http://{config.HOST}:{config.PORT}")
     print(f"   Docs:      http://localhost:{config.PORT}/docs")
@@ -513,7 +528,8 @@ def start():
         print(f"   Auth:      API key required (X-Api-Key header)")
     else:
         print("   Auth:      DISABLED (set API_KEY env var to enable)")
-    print()
+    _sys.stderr.write("DEBUG[start]: about to serve_forever\n")
+    _sys.stderr.flush()
     try:
         server.serve_forever()
     except KeyboardInterrupt:
