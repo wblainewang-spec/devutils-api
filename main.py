@@ -1,18 +1,22 @@
-#!/usr/bin/env python3
-"""DevUtils API - Launch script.
-
-Run locally:  python main.py
-Deploy via:   uvicorn app.main:app  (if using Railway with Uvicorn)
-Run via:      python main.py        (zero-dependency stdlib server)
-"""
-
-import os
+"""DevUtils API - Zero-dependency launch script."""
 import sys
+import os
 
-# Add the app directory to path
+# Immediate stderr debug logging (visible in Railway logs even if app crashes)
+sys.stderr.write("=== main.py starting ===\n")
+sys.stderr.flush()
+
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+# Log Python version and PORT
+sys.stderr.write(f"Python: {sys.version}\n")
+sys.stderr.write(f"PORT env: {os.environ.get('PORT', 'NOT SET')}\n")
+sys.stderr.write(f"PWD: {os.getcwd()}\n")
+sys.stderr.write(f"Files: {os.listdir('.')}\n")
+sys.stderr.flush()
 
 from app.server import start
 
-if __name__ == "__main__":
-    start()
+sys.stderr.write("Calling start()...\n")
+sys.stderr.flush()
+start()
