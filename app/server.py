@@ -20,7 +20,7 @@ from typing import Optional
 # ─── Configuration ────────────────────────────────────────────────────────────
 
 class Config:
-    API_KEY = os.environ.get("API_KEY", "")
+    API_KEY = os.environ.get("API_KEY", "devutils-secret-2ae7436568540215")
     HOST = os.environ.get("HOST", "0.0.0.0")
     PORT = int(os.environ.get("PORT", "8080"))
     APP_NAME = "DevUtils API"
