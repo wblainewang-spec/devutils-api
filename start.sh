@@ -2,7 +2,6 @@
 echo "=== start.sh running ==="
 echo "PORT=$PORT"
 echo "PWD=$(pwd)"
-echo "Files: $(ls)"
 echo "Python: $(python3 --version 2>&1)"
-# Flush all output before starting Python
-exec python3 main.py
+echo "=== Running minimal test server ==="
+exec python3 test_minimal.py
