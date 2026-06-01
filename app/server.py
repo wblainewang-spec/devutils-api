@@ -504,22 +504,12 @@ class DevUtilsHandler(BaseHTTPRequestHandler):
 
 
 def start():
+    """Start the HTTP server with timeout-based polling instead of serve_forever()."""
     import sys as _sys
-    _sys.stderr.write("DEBUG[start]: entering start()\n")
-    _sys.stderr.flush()
-    try:
-        _sys.stderr.write(f"DEBUG[start]: binding to {config.HOST}:{config.PORT}\n")
-        _sys.stderr.flush()
-        server = HTTPServer((config.HOST, config.PORT), DevUtilsHandler)
-        _sys.stderr.write("DEBUG[start]: server created successfully\n")
-        _sys.stderr.flush()
-    except Exception as e:
-        _sys.stderr.write(f"DEBUG[start]: FAILED to create server: {e}\n")
-        import traceback as _tb
-        _tb.print_exc(file=_sys.stderr)
-        _sys.stderr.flush()
-        raise
+    server = HTTPServer((config.HOST, config.PORT), DevUtilsHandler)
+    server.timeout = 0.5  # select()-based polling avoids selectors/epoll issues
 
+    print(f"  {config.APP_NAME} v{config.APP_VERSION} starting on {config.HOST}:{config.PORT}")
     print(f"🌐 {config.APP_NAME} v{config.APP_VERSION}")
     print(f"   Listening on http://{config.HOST}:{config.PORT}")
     print(f"   Docs:      http://localhost:{config.PORT}/docs")
@@ -528,14 +518,11 @@ def start():
         print(f"   Auth:      API key required (X-Api-Key header)")
     else:
         print("   Auth:      DISABLED (set API_KEY env var to enable)")
-    _sys.stderr.write("DEBUG[start]: about to serve_forever\n")
-    _sys.stderr.flush()
+    _sys.stdout.flush()
     try:
-        server.serve_forever()
+        while True:
+            server.handle_request()
     except KeyboardInterrupt:
         print("\nShutting down...")
         server.server_close()
 
-
-if __name__ == "__main__":
-    start()
